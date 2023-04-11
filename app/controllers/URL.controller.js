@@ -6,9 +6,9 @@ let OpenOrderInfo = {
 
 };
 let CloseOrderInfo = {
-    Type: -1,
-    Ticket: -1,
-    Symbol: "",
+    _Type: -1,
+    _Ticket: -1,
+    _Symbol: "",
 
 };
 
@@ -65,9 +65,9 @@ exports.HistoryClear = async (req, res) => {
         OpenOrderInfo.Ticket = -1;
         OpenOrderInfo.Symbol = "";
 
-        CloseOrderInfo.Type = -1;
-        CloseOrderInfo.Ticket = -1;
-        CloseOrderInfo.Symbol = "";
+        CloseOrderInfo._Type = -1;
+        CloseOrderInfo._Ticket = -1;
+        CloseOrderInfo._Symbol = "";
 
         let msg = await PrintLog("HistoryClear");
         res.status(200).send({ message: msg });
@@ -87,7 +87,7 @@ exports.TVOpenSignal = async (req, res) => {
             OpenOrderInfo.Symbol = req.body.symbol;
             const d = new Date();
             let time = d.getTime();
-            OpenOrderInfo.Ticket = (int)(time / 1000);
+            OpenOrderInfo.Ticket = time;
             msg = "New Order is stored. Type: " +
                 (OpenOrderInfo.Type == 0 ? "Buy," : "Sell,") +
                 " Lot: " + OpenOrderInfo.Lot + "," +
@@ -95,15 +95,15 @@ exports.TVOpenSignal = async (req, res) => {
                 " Symbol: " + OpenOrderInfo.Symbol;
         }
         else {
-            CloseOrderInfo.Type = req.body.type == "buy" ? 0 : 1;
-            CloseOrderInfo.Symbol = req.body.symbol;
+            CloseOrderInfo._Type = req.body.type == "buy" ? 0 : 1;
+            CloseOrderInfo._Symbol = req.body.symbol;
             const d = new Date();
             let time = d.getTime();
-            CloseOrderInfo.Ticket = (int)(time / 1000);
+            CloseOrderInfo._Ticket = time;
             msg = "close Order is stored. Type: " +
-                (CloseOrderInfo.Type == 0 ? "Buy," : "Sell,") +
-                " Ticket: " + CloseOrderInfo.Ticket +
-                " Symbol: " + CloseOrderInfo.Symbol;
+                (CloseOrderInfo._Type == 0 ? "Buy," : "Sell,") +
+                " Ticket: " + CloseOrderInfo._Ticket +
+                " Symbol: " + CloseOrderInfo._Symbol;
         }
         console.log(msg);
         await PrintLog(msg);
