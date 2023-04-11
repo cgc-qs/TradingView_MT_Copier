@@ -11,14 +11,14 @@ const { Console } = require('console');
 
 const fs = require('fs');
 
-exports.Check = (req, res) => {
+exports.Check = async (req, res) => {
     res.status(200).send({ message: "!!! OK !!!" });
-    PrintLog("URL is Checked");
+    await PrintLog("URL is Checked");
 };
 
 
 // Retrieve all Tutorials from the database.
-exports.Login = (req, res) => {
+exports.Login = async (req, res) => {
     try {
         kind = req.body.kind;
         msg = "Slave Login is success";
@@ -33,12 +33,12 @@ exports.Login = (req, res) => {
             msg = "Master Login is success"
         }
 
-        PrintLog(msg);
+        await PrintLog(msg);
         res.status(200).send({ message: msg });
     }
     catch (e) {
         res.status(500).send({ message: " Error 500 : Login is Failed " + " errorMessage:" + e.message });
-        PrintLog(" Error 500 : Login is Failed " + " errorMessage:" + e.message);
+        await PrintLog(" Error 500 : Login is Failed " + " errorMessage:" + e.message);
     }
 };
 
@@ -50,11 +50,22 @@ exports.History = async (req, res) => {
     }
     catch (e) {
         res.status(500).send({ message: " Error 500 : History is Failed " + " errorMessage:" + e.message });
-        PrintLog(" Error 500 : History is Failed " + " errorMessage:" + e.message);
+        await PrintLog(" Error 500 : History is Failed " + " errorMessage:" + e.message);
     }
 };
 
-exports.TVOpenSignal = (req, res) => {
+exports.HistoryClear = async (req, res) => {
+    try {
+        let msg = await PrintLog("HistoryClear");
+        res.status(200).send({ message: msg });
+    }
+    catch (e) {
+        res.status(500).send({ message: " Error 500 : HistoryClear is Failed " + " errorMessage:" + e.message });
+        await PrintLog(" Error 500 : HistoryClear is Failed " + " errorMessage:" + e.message);
+    }
+};
+
+exports.TVOpenSignal = async (req, res) => {
     try {
         OrderInfo.Type = req.body.type;
         OrderInfo.Lot = req.body.lot;
@@ -70,60 +81,60 @@ exports.TVOpenSignal = (req, res) => {
             " Symbol: " + OrderInfo.Symbol +
             " Position: " + OrderInfo.Position;
         console.log(msg);
-        PrintLog(msg);
+        await PrintLog(msg);
         res.status(200).send({ message: msg });
     }
     catch (e) {
         res.status(500).send({ message: " Error 500 : TVOpenSignal is Failed " + " errorMessage:" + e.message });
-        PrintLog(" Error 500 : TVOpenSignal is Failed " + " errorMessage:" + e.message);
+        await PrintLog(" Error 500 : TVOpenSignal is Failed " + " errorMessage:" + e.message);
     }
 };
 
-exports.OpenOrder = (req, res) => {
-    try {
-        OrderInfo.Type = req.body.type;
-        OrderInfo.Lot = req.body.lot;
-        OrderInfo.Ticket = req.body.ticket;
-        msg = "New Order is stored. Type: " +
-            (OrderInfo.Type == 0 ? "Buy," : "Sell,") +
-            " Lot: " + OrderInfo.Lot + "," +
-            " Ticket: " + OrderInfo.Ticket;
-        console.log(msg);
-        PrintLog(msg);
-        res.status(200).send({ message: msg });
-    }
-    catch (e) {
-        res.status(500).send({ message: " Error 500 : OrderOpen is Failed " + " errorMessage:" + e.message });
-        PrintLog(" Error 500 : OrderOpen is Failed " + " errorMessage:" + e.message);
-    }
-};
+// exports.OpenOrder = async (req, res) => {
+//     try {
+//         OrderInfo.Type = req.body.type;
+//         OrderInfo.Lot = req.body.lot;
+//         OrderInfo.Ticket = req.body.ticket;
+//         msg = "New Order is stored. Type: " +
+//             (OrderInfo.Type == 0 ? "Buy," : "Sell,") +
+//             " Lot: " + OrderInfo.Lot + "," +
+//             " Ticket: " + OrderInfo.Ticket;
+//         console.log(msg);
+//         await PrintLog(msg);
+//         res.status(200).send({ message: msg });
+//     }
+//     catch (e) {
+//         res.status(500).send({ message: " Error 500 : OrderOpen is Failed " + " errorMessage:" + e.message });
+//         await PrintLog(" Error 500 : OrderOpen is Failed " + " errorMessage:" + e.message);
+//     }
+// };
 
-exports.CloseOrder = (req, res) => {
-    try {
-        CloseTicket = req.body.ticket;
-        msg = "Close Order is stored. Ticket: " + CloseTicket;
-        console.log(msg);
-        PrintLog(msg);
-        res.status(200).send({ message: msg });
-    }
-    catch (e) {
-        res.status(500).send({ message: " Error 500 : CloseOrder is Failed " + " errorMessage:" + e.message });
-        PrintLog(" Error 500 : CloseOrder is Failed " + " errorMessage:" + e.message);
-    }
-};
+// exports.CloseOrder = async (req, res) => {
+//     try {
+//         CloseTicket = req.body.ticket;
+//         msg = "Close Order is stored. Ticket: " + CloseTicket;
+//         console.log(msg);
+//         await PrintLog(msg);
+//         res.status(200).send({ message: msg });
+//     }
+//     catch (e) {
+//         res.status(500).send({ message: " Error 500 : CloseOrder is Failed " + " errorMessage:" + e.message });
+//         await PrintLog(" Error 500 : CloseOrder is Failed " + " errorMessage:" + e.message);
+//     }
+// };
 
-exports.GetOrderInfo = (req, res) => {
+exports.GetOrderInfo = async (req, res) => {
     try {
-        res.status(200).send({ message: "Information:", openInformation: OrderInfo, closeTicket: CloseTicket });
-        PrintLog("Information is success");
+        res.status(200).send({ message: "Information:", openInformation: OrderInfo });
+        await PrintLog("GetOrderInfo is success");
     }
     catch (e) {
         res.status(500).send({ message: " Error 500 : GetOrderInfo is Failed " + " errorMessage:" + e.message });
-        PrintLog(" Error 500 : GetOrderInfo is Failed " + " errorMessage:" + e.message);
+        await PrintLog(" Error 500 : GetOrderInfo is Failed " + " errorMessage:" + e.message);
     }
 };
 
-const PrintLog = (msg) => {
+const PrintLog = async (msg) => {
     let date_ob = new Date();
     // adjust 0 before single digit date
     let date = ("0" + date_ob.getDate()).slice(-2);
@@ -141,14 +152,24 @@ const PrintLog = (msg) => {
     // prints date & time in YYYY-MM-DD HH:MM:SS format
     const date_time = (year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds);
     const fileName = year + "_" + month + "_" + date + ".txt";
-
-    fs.appendFile(fileName, date_time + " => " + msg + "\n", err => {
-        if (err) {
-            console.error(err);
-            console.log("File write is failed", fileName);
-        }
-        // file written successfully       
-    });
+    if (msg != "HistoryClear") {
+        const Resultdata = await fs.promises.appendFile(fileName, date_time + " => " + msg + "\n", err => {
+            if (err) {
+                console.error(err);
+                console.log("File write is failed", fileName);
+            }
+            // file written successfully       
+        });
+    }
+    else {
+        const Resultdata = await fs.promises.writeFile(fileName, date_time + " => " + msg + "\n", err => {
+            if (err) {
+                console.error(err);
+                console.log("File write is failed", fileName);
+            }
+            // file written successfully       
+        });
+    }
 }
 
 
