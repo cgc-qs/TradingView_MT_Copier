@@ -126,7 +126,7 @@ exports.TVOpenSignal = async (req, res) => {
 exports.GetOrderInfo = async (req, res) => {
     try {
         res.status(200).send({ message: "Information:", openInformation: OrderInfo });
-        await PrintLog("GetOrderInfo is success");
+        //await PrintLog("GetOrderInfo is success");
     }
     catch (e) {
         res.status(500).send({ message: " Error 500 : GetOrderInfo is Failed " + " errorMessage:" + e.message });
