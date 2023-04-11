@@ -1,12 +1,17 @@
-let OrderInfo = {
+let OpenOrderInfo = {
     Type: -1,
     Lot: 0,
     Ticket: -1,
     Symbol: "",
-    Position: 0
+
 };
-let CloseTicket = -1;
-const { Console } = require('console');
+let CloseOrderInfo = {
+    Type: -1,
+    Ticket: -1,
+    Symbol: "",
+
+};
+
 // Create and Save a new Tutorial
 
 const fs = require('fs');
@@ -24,12 +29,11 @@ exports.Login = async (req, res) => {
         msg = "Slave Login is success";
 
         if (kind == 0) {
-            OrderInfo.Type = -1;
-            OrderInfo.Lot = 0;
-            OrderInfo.Ticket = -1;
-            CloseTicket = -1;
-            OrderInfo.Symbol = "";
-            OrderInfo.Position = 0;
+            OpenOrderInfo.Type = -1;
+            OpenOrderInfo.Lot = 0;
+            OpenOrderInfo.Ticket = -1;
+            OpenOrderInfo.Symbol = "";
+
             msg = "Master Login is success"
         }
 
@@ -56,6 +60,15 @@ exports.History = async (req, res) => {
 
 exports.HistoryClear = async (req, res) => {
     try {
+        OpenOrderInfo.Type = -1;
+        OpenOrderInfo.Lot = 0;
+        OpenOrderInfo.Ticket = -1;
+        OpenOrderInfo.Symbol = "";
+
+        CloseOrderInfo.Type = -1;
+        CloseOrderInfo.Ticket = -1;
+        CloseOrderInfo.Symbol = "";
+
         let msg = await PrintLog("HistoryClear");
         res.status(200).send({ message: msg });
     }
@@ -67,19 +80,31 @@ exports.HistoryClear = async (req, res) => {
 
 exports.TVOpenSignal = async (req, res) => {
     try {
-        OrderInfo.Type = req.body.type == "buy" ? 0 : 1;
-        OrderInfo.Lot = req.body.lot;
-        OrderInfo.Position = req.body.position;
-        OrderInfo.Symbol = req.body.symbol;
-        const d = new Date();
-        let time = d.getTime();
-        OrderInfo.Ticket = time;
-        msg = "New Order is stored. Type: " +
-            (OrderInfo.Type == 0 ? "Buy," : "Sell,") +
-            " Lot: " + OrderInfo.Lot + "," +
-            " Ticket: " + OrderInfo.Ticket +
-            " Symbol: " + OrderInfo.Symbol +
-            " Position: " + OrderInfo.Position;
+        msg = "";
+        if (req.body.position != "0") {
+            OpenOrderInfo.Type = req.body.type == "buy" ? 0 : 1;
+            OpenOrderInfo.Lot = req.body.lot;
+            OpenOrderInfo.Symbol = req.body.symbol;
+            const d = new Date();
+            let time = d.getTime();
+            OpenOrderInfo.Ticket = (int)(time / 1000);
+            msg = "New Order is stored. Type: " +
+                (OpenOrderInfo.Type == 0 ? "Buy," : "Sell,") +
+                " Lot: " + OpenOrderInfo.Lot + "," +
+                " Ticket: " + OpenOrderInfo.Ticket +
+                " Symbol: " + OpenOrderInfo.Symbol;
+        }
+        else {
+            CloseOrderInfo.Type = req.body.type == "buy" ? 0 : 1;
+            CloseOrderInfo.Symbol = req.body.symbol;
+            const d = new Date();
+            let time = d.getTime();
+            CloseOrderInfo.Ticket = (int)(time / 1000);
+            msg = "close Order is stored. Type: " +
+                (CloseOrderInfo.Type == 0 ? "Buy," : "Sell,") +
+                " Ticket: " + CloseOrderInfo.Ticket +
+                " Symbol: " + CloseOrderInfo.Symbol;
+        }
         console.log(msg);
         await PrintLog(msg);
         res.status(200).send({ message: msg });
@@ -92,13 +117,13 @@ exports.TVOpenSignal = async (req, res) => {
 
 // exports.OpenOrder = async (req, res) => {
 //     try {
-//         OrderInfo.Type = req.body.type;
-//         OrderInfo.Lot = req.body.lot;
-//         OrderInfo.Ticket = req.body.ticket;
+//         OpenOrderInfo.Type = req.body.type;
+//         OpenOrderInfo.Lot = req.body.lot;
+//         OpenOrderInfo.Ticket = req.body.ticket;
 //         msg = "New Order is stored. Type: " +
-//             (OrderInfo.Type == 0 ? "Buy," : "Sell,") +
-//             " Lot: " + OrderInfo.Lot + "," +
-//             " Ticket: " + OrderInfo.Ticket;
+//             (OpenOrderInfo.Type == 0 ? "Buy," : "Sell,") +
+//             " Lot: " + OpenOrderInfo.Lot + "," +
+//             " Ticket: " + OpenOrderInfo.Ticket;
 //         console.log(msg);
 //         await PrintLog(msg);
 //         res.status(200).send({ message: msg });
@@ -125,7 +150,7 @@ exports.TVOpenSignal = async (req, res) => {
 
 exports.GetOrderInfo = async (req, res) => {
     try {
-        res.status(200).send({ message: "Information:", openInformation: OrderInfo });
+        res.status(200).send({ message: "Information:", openInformation: OpenOrderInfo, closeInformation: CloseOrderInfo });
         //await PrintLog("GetOrderInfo is success");
     }
     catch (e) {
