@@ -67,7 +67,7 @@ exports.HistoryClear = async (req, res) => {
 
 exports.TVOpenSignal = async (req, res) => {
     try {
-        OrderInfo.Type = req.body.type;
+        OrderInfo.Type = req.body.type == "buy" ? 0 : 1;
         OrderInfo.Lot = req.body.lot;
         OrderInfo.Position = req.body.position;
         OrderInfo.Symbol = req.body.symbol;
@@ -75,7 +75,7 @@ exports.TVOpenSignal = async (req, res) => {
         let time = d.getTime();
         OrderInfo.Ticket = time;
         msg = "New Order is stored. Type: " +
-            (OrderInfo.Type == "buy" ? "Buy," : "Sell,") +
+            (OrderInfo.Type == 0 ? "Buy," : "Sell,") +
             " Lot: " + OrderInfo.Lot + "," +
             " Ticket: " + OrderInfo.Ticket +
             " Symbol: " + OrderInfo.Symbol +
