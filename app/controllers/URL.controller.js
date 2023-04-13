@@ -134,11 +134,10 @@ exports.AlertSignal = async (req, res) => {
         let time = d.getTime();
         alertSignal.AlertTicket = time;
         let month = d.getMonth() + 1;
-        msg = "New Order is stored. Type: " +
-            (alertSignal.AlertType == 0 ? "Buy," : "Sell,") +
-            " Time: " + d.getFullYear() + "-" + month + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + "," +
-            " Ticket: " + alertSignal.AlertTicket +
-            " Symbol: " + alertSignal.AlertSymbol;
+        msg = "New Position " +
+            " Symbol: " + alertSignal.AlertSymbol +
+            " Type: " + (alertSignal.AlertType == 0 ? "Buy," : "Sell,") +
+            " Ticket: " + alertSignal.AlertTicket;
         console.log(msg);
         await PrintLog(msg);
 
@@ -250,7 +249,7 @@ const PrintLog = async (msg) => {
     const date_time = (year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds);
     const fileName = year + "_" + month + "_" + date + ".txt";
     if (msg != "HistoryClear") {
-        const Resultdata = await fs.promises.appendFile(fileName, date_time + " => " + msg + "\n", err => {
+        const Resultdata = await fs.promises.appendFile(fileName, date_time + " => " + msg + "  \n\n   ", err => {
             if (err) {
                 console.error(err);
                 console.log("File write is failed", fileName);
