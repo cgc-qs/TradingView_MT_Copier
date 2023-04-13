@@ -12,6 +12,12 @@ let CloseOrderInfo = {
 
 };
 
+let alertSignal = {
+    AlertType: -1,
+    AlertSymbol: "",
+    AlertTicket: -1,
+};
+
 // Create and Save a new Tutorial
 
 const fs = require('fs');
@@ -115,6 +121,30 @@ exports.TVOpenSignal = async (req, res) => {
     }
 };
 
+
+exports.AlertSignal = async (req, res) => {
+    try {
+        msg = "";
+        alertSignal.AlertType = req.body.type == "buy" ? 0 : 1;
+        alertSignal.AlertSymbol = req.body.symbol;
+        const d = new Date();
+        let time = d.getTime();
+        alertSignal.AlertTicket = time;
+        msg = "New Order is stored. Type: " +
+            (alertSignal.AlertType == 0 ? "Buy," : "Sell,") +
+            " Time: " + d + "," +
+            " Ticket: " + alertSignal.AlertTicket +
+            " Symbol: " + alertSignal.AlertSymbol;
+        console.log(msg);
+        await PrintLog(msg);
+        res.status(200).send({ message: msg });
+    }
+    catch (e) {
+        res.status(500).send({ message: " Error 500 : alertSignal is Failed " + " errorMessage:" + e.message });
+        await PrintLog(" Error 500 : alertSignal is Failed " + " errorMessage:" + e.message);
+    }
+};
+
 // exports.OpenOrder = async (req, res) => {
 //     try {
 //         OpenOrderInfo.Type = req.body.type;
@@ -156,6 +186,17 @@ exports.GetOrderInfo = async (req, res) => {
     catch (e) {
         res.status(500).send({ message: " Error 500 : GetOrderInfo is Failed " + " errorMessage:" + e.message });
         await PrintLog(" Error 500 : GetOrderInfo is Failed " + " errorMessage:" + e.message);
+    }
+};
+
+exports.GetAlertInfo = async (req, res) => {
+    try {
+        res.status(200).send({ message: "Information:", alertInformation: alertSignal });
+        //await PrintLog("GetOrderInfo is success");
+    }
+    catch (e) {
+        res.status(500).send({ message: " Error 500 : GetAlertInfo is Failed " + " errorMessage:" + e.message });
+        await PrintLog(" Error 500 : GetAlertInfo is Failed " + " errorMessage:" + e.message);
     }
 };
 

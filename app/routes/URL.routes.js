@@ -15,11 +15,15 @@ module.exports = app => {
 
     router.get("/GetOrderInfo", orderSignal.GetOrderInfo);
 
+    router.get("/GetAlertInfo", orderSignal.GetAlertInfo);
+
     router.get("/History", orderSignal.History);
 
     router.post("/TVOpenSignal", orderSignal.TVOpenSignal);
 
     router.post("/HistoryClear", orderSignal.HistoryClear);
+
+    router.post("/AlertSignal", orderSignal.AlertSignal);
 
 
     app.use("/RemoteCopier", router);  ///// this is base url
