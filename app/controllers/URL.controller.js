@@ -12,13 +12,11 @@ let CloseOrderInfo = {
 
 };
 
-let alertSignal = {
-    AlertType: -1,
-    AlertSymbol: "",
-    AlertTicket: -1,
-};
+
 
 // Create and Save a new Tutorial
+
+let Alerts = [];
 
 const fs = require('fs');
 
@@ -125,18 +123,36 @@ exports.TVOpenSignal = async (req, res) => {
 exports.AlertSignal = async (req, res) => {
     try {
         msg = "";
+        let alertSignal = {
+            AlertType: -1,
+            AlertSymbol: "",
+            AlertTicket: -1,
+        };
         alertSignal.AlertType = req.body.type == "buy" ? 0 : 1;
         alertSignal.AlertSymbol = req.body.symbol;
         const d = new Date();
         let time = d.getTime();
         alertSignal.AlertTicket = time;
+        let month = d.getMonth() + 1;
         msg = "New Order is stored. Type: " +
             (alertSignal.AlertType == 0 ? "Buy," : "Sell,") +
-            " Time: " + d + "," +
+            " Time: " + d.getFullYear() + "-" + month + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + "," +
             " Ticket: " + alertSignal.AlertTicket +
             " Symbol: " + alertSignal.AlertSymbol;
         console.log(msg);
         await PrintLog(msg);
+
+        let find = false;
+        for (let i = 0; i < Alerts.length; i++) {
+            _alert = Alerts[i];
+            if (_alert.AlertSymbol == req.body.symbol) {
+                find = true;
+                Alerts[i] = { ...alertSignal };
+            }
+        }
+        if (!find)
+            Alerts.push(alertSignal);
+
         res.status(200).send({ message: msg });
     }
     catch (e) {
@@ -191,7 +207,22 @@ exports.GetOrderInfo = async (req, res) => {
 
 exports.GetAlertInfo = async (req, res) => {
     try {
+        sym = req.body.symbol;
+        let alertSignal = {
+            AlertType: -1,
+            AlertSymbol: "",
+            AlertTicket: -1,
+        };
+
+        for (let i = 0; i < Alerts.length; i++) {
+            let _alert = Alerts[i];
+            if (_alert.AlertSymbol == req.body.symbol) {
+                alertSignal = { ..._alert };
+            }
+        }
+
         res.status(200).send({ message: "Information:", alertInformation: alertSignal });
+
         //await PrintLog("GetOrderInfo is success");
     }
     catch (e) {
