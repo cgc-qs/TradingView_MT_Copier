@@ -24,6 +24,12 @@ const wss = new WebSocket.Server({ server });
 // Store all connected WebSocket clients
 const clients = new Set();
 
+const empty={    
+        alert:"",
+        type:"",
+        symbol:""        
+}
+
 // Handle new WebSocket connections
 wss.on('connection', (ws) => {
     console.log('New client connected');
@@ -38,6 +44,7 @@ wss.on('connection', (ws) => {
     ws.on('message', data => {
         wss.clients.forEach(client => {
           console.log(`distributing message: ${data}`)
+          client.send(JSON.stringify(empty))
           //client.send(`${data}`)
         })
       })
