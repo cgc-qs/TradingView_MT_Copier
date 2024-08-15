@@ -34,6 +34,13 @@ wss.on('connection', (ws) => {
         clients.delete(ws);
         console.log('Client disconnected');
     });
+
+    ws.on('message', data => {
+        wss.clients.forEach(client => {
+          console.log(`distributing message: ${data}`)
+          client.send(`${data}`)
+        })
+      })
 });
 
 app.get("/", (req, res) => {
