@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
-// const socket = new WebSocket('ws://localhost:80');
-const socket = new WebSocket('wss://squid-app-f4rfc.ondigitalocean.app');
+const socket = new WebSocket('ws://localhost:80');
+//const socket = new WebSocket('wss://squid-app-f4rfc.ondigitalocean.app');
 
 socket.onmessage = function(event) {
     const signal = JSON.parse(event.data);

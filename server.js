@@ -38,7 +38,7 @@ wss.on('connection', (ws) => {
     ws.on('message', data => {
         wss.clients.forEach(client => {
           console.log(`distributing message: ${data}`)
-          client.send(`${data}`)
+          //client.send(`${data}`)
         })
       })
 });
