@@ -3,13 +3,13 @@ const WebSocket = require('ws');
 const bodyParser = require('body-parser');
 const cors = require("cors");
 var corsOptions = {
-    origin: "http://localhost:80"
+    origin: "http://localhost:25345"
 };
 
 
 // Create an Express app
 const app = express();
-const port = process.env.PORT || 80;
+const port = process.env.PORT || 25345;
 app.use(cors(corsOptions));
 
 // Set up body parser to handle JSON POST requests
