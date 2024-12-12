@@ -77,7 +77,7 @@ const Converting_Alert = (text) => {
     result.lotsize = "";
     result.type = "";
     result.time = GetDateText();
-    result.ticket = new Date().getTime();
+    result.ticket = new Date().getTime() - new Date("2024-12-01").getTime();
 
     if (separatedValues.length >= 5)
         result.lotsize = separatedValues[4];
