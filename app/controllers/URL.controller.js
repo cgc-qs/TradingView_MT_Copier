@@ -125,7 +125,7 @@ exports.AlertSignal = async (req, res) => {
             Alerts = filteredArray;
         }
 
-        // Alerts.push(convertedSig);
+        Alerts.push(convertedSig);
         // let msg = "";
         // for (let i = 0; i < Alerts.length; i++) {
         //     let element = Alerts[i];
