@@ -143,7 +143,7 @@ exports.AlertSignal = async (req, res) => {
 
 exports.GetOrderInfo = async (req, res) => {
     try {
-        console.log("req body: ", req.body);
+
         const separatedValues = req.body.split(',');
 
         let result = GetSpecifiedAlert(separatedValues[0], "", separatedValues[1], "");
