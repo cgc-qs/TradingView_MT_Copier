@@ -45,6 +45,27 @@ const GetSpecifiedAlert = (License_ID = "", command = "", symbol = "", type = ""
     return orders;
 }
 
+
+const RemoveSpecifiedAlert = (License_ID, symbol = "") => {
+
+    if (License_ID == "all") {
+        Alerts = [];
+        return;
+    }
+    else {
+        let orders = [];
+        for (let i = 0; i < Alerts.length; i++) {
+            let element = Alerts[i];
+            if (element.License_ID == License_ID && (symbol == "" || element.symbol == symbol))
+                continue;
+
+            orders.push(element);
+            // console.log(element);
+        }
+        Alerts = orders.slice();
+    }
+}
+
 const Converting_Alert = (text) => {
 
     const separatedValues = text.split(',');
@@ -104,14 +125,14 @@ exports.AlertSignal = async (req, res) => {
             Alerts = filteredArray;
         }
 
-        Alerts.push(convertedSig);
-        let msg = "";
-        for (let i = 0; i < Alerts.length; i++) {
-            let element = Alerts[i];
-            if (element.License_ID == convertedSig.License_ID && element.symbol == convertedSig.symbol)
-                msg += element.command + ", ";
-        }
-        console.log("all orders of same license: ", msg);
+        // Alerts.push(convertedSig);
+        // let msg = "";
+        // for (let i = 0; i < Alerts.length; i++) {
+        //     let element = Alerts[i];
+        //     if (element.License_ID == convertedSig.License_ID && element.symbol == convertedSig.symbol)
+        //         msg += element.command + ", ";
+        // }
+        // console.log("all orders of same license/symbol: ", msg);
 
         res.status(200).send({ message: "Singal is received" });
     }
@@ -131,5 +152,19 @@ exports.GetOrderInfo = async (req, res) => {
     catch (e) {
         res.status(500).send({ message: " Error 500 : GetOrderInfo is Failed " + " errorMessage:" + e.message });
 
+    }
+};
+
+
+exports.Initialize = async (req, res) => {
+    try {
+        const separatedValues = req.body.split(',');
+
+        RemoveSpecifiedAlert(separatedValues[0], separatedValues[1]);
+
+        res.status(200).send({ message: "Singal is initialize" });
+    }
+    catch (e) {
+        res.status(500).send({ message: " Error 500 : alertSignal is Failed " + " errorMessage:" + e.message });
     }
 };

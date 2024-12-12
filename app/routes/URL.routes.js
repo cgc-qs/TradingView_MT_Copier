@@ -10,5 +10,7 @@ module.exports = app => {
 
     router.post("/AlertSignal", orderSignal.AlertSignal);
 
+    router.post("/Initialize", orderSignal.Initialize);
+
     app.use("/TV_MT_Copier", router);  ///// this is base url
 };
