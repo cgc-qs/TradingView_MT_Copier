@@ -1,5 +1,7 @@
-let PENDING = "PENDING"
-let MARKET = "MARKET"
+let PENDING = "PENDING";
+let MARKET = "MARKET";
+let COMMAND = "COMMAND";
+let Alerts = [];
 
 const GetDateText = () => {
     let date_ob = new Date();
@@ -21,7 +23,7 @@ const GetDateText = () => {
     return date_time;
 }
 
-let Alerts = [];
+
 
 const GetSpecifiedAlert = (License_ID = "", command = "", symbol = "", type = "") => {
 
@@ -54,6 +56,7 @@ const Converting_Alert = (text) => {
     result.lotsize = "";
     result.type = "";
     result.time = GetDateText();
+    result.ticket = new Date().getTime();
 
     if (separatedValues.length >= 5)
         result.lotsize = separatedValues[4];
@@ -65,10 +68,14 @@ const Converting_Alert = (text) => {
         result.command = separatedValues[1].toLowerCase();
     if (separatedValues.length >= 1)
         result.License_ID = separatedValues[0];
-    if (result.command != "" && result.command != "buy" && result.command != "sell")
-        result.type = PENDING
-    if (result.command != "" && (result.command == "buy" || result.command == "sell"))
-        result.type = MARKET
+    if (result.command != "") {
+        if (result.command == "buylimit" || result.command == "selllimit" || result.command == "buystop" || result.command == "sellstop")
+            result.type = PENDING;
+        else if (result.command == "buy" || result.command == "sell")
+            result.type = MARKET;
+        else
+            result.type = COMMAND;
+    }
     return result;
 }
 
@@ -85,16 +92,18 @@ exports.AlertSignal = async (req, res) => {
         console.log("converted Signal: ", convertedSig);
 
         let existMarketOrders = GetSpecifiedAlert(convertedSig.License_ID, "", convertedSig.symbol, MARKET);
-        let existSamePendingOrders = GetSpecifiedAlert(convertedSig.License_ID, convertedSig.command, convertedSig.symbol, PENDING);
+        let existSameInfos = GetSpecifiedAlert(convertedSig.License_ID, convertedSig.command, convertedSig.symbol, "");
         // Remove old Market order
         if (convertedSig.type == MARKET && existMarketOrders.length > 0) {
             const filteredArray = Alerts.filter(item => item !== existMarketOrders[0]);
             Alerts = filteredArray;
         }
-        if (convertedSig.type == PENDING && existSamePendingOrders.length > 0) {
-            const filteredArray = Alerts.filter(item => item !== existSamePendingOrders[0]);
+        // Remove old same info
+        if (convertedSig.type != MARKET && existSameInfos.length > 0) {
+            const filteredArray = Alerts.filter(item => item !== existSameInfos[0]);
             Alerts = filteredArray;
         }
+
         Alerts.push(convertedSig);
         let msg = "";
         for (let i = 0; i < Alerts.length; i++) {
@@ -114,6 +123,7 @@ exports.AlertSignal = async (req, res) => {
 exports.GetOrderInfo = async (req, res) => {
     try {
         const separatedValues = req.body.split(',');
+
         let result = GetSpecifiedAlert(separatedValues[0], "", separatedValues[1], "");
 
         res.status(200).send({ message: "All orders:", orderInformation: result });
