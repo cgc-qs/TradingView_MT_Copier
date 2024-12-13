@@ -80,15 +80,15 @@ const Converting_Alert = (text) => {
     result.ticket = new Date().getTime() - new Date("2024-12-01").getTime();
 
     if (separatedValues.length >= 5)
-        result.lotsize = separatedValues[4];
+        result.price = separatedValues[4].trim();
     if (separatedValues.length >= 4)
-        result.price = separatedValues[3];
+        result.lotsize = separatedValues[3].trim();
     if (separatedValues.length >= 3)
-        result.symbol = separatedValues[2];
+        result.symbol = separatedValues[2].trim();
     if (separatedValues.length >= 2)
-        result.command = separatedValues[1].toLowerCase();
+        result.command = (separatedValues[1].trim()).toLowerCase();
     if (separatedValues.length >= 1)
-        result.License_ID = separatedValues[0];
+        result.License_ID = separatedValues[0].trim();
     if (result.command != "") {
         if (result.command == "buylimit" || result.command == "selllimit" || result.command == "buystop" || result.command == "sellstop")
             result.type = PENDING;
@@ -146,7 +146,7 @@ exports.GetOrderInfo = async (req, res) => {
 
         const separatedValues = req.body.split(',');
 
-        let result = GetSpecifiedAlert(separatedValues[0], "", separatedValues[1], "");
+        let result = GetSpecifiedAlert(separatedValues[0].trim(), "", separatedValues[1].trim(), "");
 
         res.status(200).send({ message: "All orders:", orderInformation: result });
     }
